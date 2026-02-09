@@ -1,0 +1,53 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'tests/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' 
+
+      - name: Install Dependencies & Playwright
+        run: |
+          pip install pytest playwright requests boto3
+          playwright install
+
+      - name: Run Tests
+        run: pytest tests/
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Zip Lambda Code
+        run: |
+          cd visitor-counter
+          zip -r ../function.zip .
+          cd ..
+
+      - name: Update Lambda Code
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://function.zip
