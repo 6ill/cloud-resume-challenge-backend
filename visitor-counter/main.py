@@ -11,7 +11,7 @@ table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
     try:
-        ip_address = event["requestContext"]["http"]["sourceIp"]
+        ip_address = event["requestContext"]["identity"]["sourceIp"]
     except KeyError:
         # Fallback for testing or non-proxy events
         ip_address = "0.0.0.0"
