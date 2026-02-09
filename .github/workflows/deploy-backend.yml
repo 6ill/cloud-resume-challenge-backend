@@ -25,7 +25,7 @@ jobs:
 
       - name: Install Dependencies & Playwright
         run: |
-          pip install pytest playwright requests boto3
+          pip install pytest-playwright requests boto3
           playwright install
 
       - name: Run Tests
