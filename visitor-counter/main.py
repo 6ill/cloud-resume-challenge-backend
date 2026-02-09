@@ -20,7 +20,7 @@ def lambda_handler(event, context):
     ip_hash = hash_object.hexdigest()
 
     now = int(time.time())
-    ttl_expiry = now + (24 * 60 * 60)
+    ttl_expiry = now + (24 * 60 * 60 * 7)
 
     try:
         table.update_item(
