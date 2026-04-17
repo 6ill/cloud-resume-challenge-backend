@@ -8,7 +8,7 @@ dynamodb = boto3.resource("dynamodb")
 
 table_name = os.environ["TABLE_NAME"]
 table = dynamodb.Table(table_name)
-# testing
+
 def lambda_handler(event, context):
     try:
         ip_address = event["requestContext"]["identity"]["sourceIp"]
